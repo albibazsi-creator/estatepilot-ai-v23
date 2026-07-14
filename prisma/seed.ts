@@ -755,9 +755,9 @@ async function main() {
       { agencyId: agency.id, code: "RELEASE_GATE_FAILED", category: "ops", severity: "high", httpStatus: 500, publicMessage: "A release gate blokkolta a kiadást.", remediation: "Blockerek javítása.", ownerArea: "ops" }
     ] });
   }
-  const usageCount = await prisma.usageMeterRecord.count({ where: { agencyId: agency.id } });
-  if (usageCount === 0) {
-    await prisma.usageMeterRecord.createMany({ data: [
+  const usageMeterRecordCount = await prisma.usageMeterRecord.count({ where: { agencyId: agency.id } });
+if (usageMeterRecordCount === 0) {
+  await prisma.usageMeterRecord.createMany({ data: [
       { agencyId: agency.id, listingId: listing.id, featureKey: "listing_hosted", quantity: 3, unit: "listing", estimatedCostHuf: 75, source: "seed" },
       { agencyId: agency.id, listingId: listing.id, featureKey: "ai_listing_copy", quantity: 6, unit: "generation", estimatedCostHuf: 900, source: "seed" },
       { agencyId: agency.id, listingId: listing.id, featureKey: "lead_capture", quantity: 1, unit: "lead", estimatedCostHuf: 8, source: "seed" },
