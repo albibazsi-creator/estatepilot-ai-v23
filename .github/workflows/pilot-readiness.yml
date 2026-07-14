@@ -1,0 +1,47 @@
+name: EstatePilot V14 Pilot Readiness
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "app/**"
+      - "lib/**"
+      - "prisma/**"
+      - "scripts/**"
+      - "package.json"
+
+jobs:
+  pilot-readiness:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/estatepilot_pilot
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      DEFAULT_AGENT_EMAIL: demo@estatepilot.ai
+      AUTH_PROVIDER: dev
+      DEV_AUTH_ENABLED: true
+      ENABLE_STRICT_RELEASE_GATES: false
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: estatepilot_pilot
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run prisma:validate
+      - run: npm run db:push
+      - run: npm run db:seed
+      - run: npm run release:v14-check
+      - run: npm run build

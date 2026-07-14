@@ -1,0 +1,22 @@
+{
+  "contractVersion": "estatepilot.spatial.reconstruction.v18",
+  "requestId": "spatial-demo",
+  "mode": "dry_run",
+  "inputBundle": {
+    "images": [],
+    "videos": [],
+    "panoramas": [],
+    "floorplans": []
+  },
+  "reconstructionSettings": {
+    "targetFormats": ["ksplat", "splat", "ply", "previewImage", "sceneManifest"],
+    "publishRequiresHumanReview": true
+  },
+  "acceptanceCriteria": {
+    "geometryScore": 72,
+    "textureScore": 72,
+    "coverageScore": 70,
+    "viewerScore": 80,
+    "disclosureRequired": true
+  }
+}

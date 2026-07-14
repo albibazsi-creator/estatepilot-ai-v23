@@ -1,0 +1,940 @@
+{
+  "generatedBy": "v12-static-scan",
+  "routes": [
+    {
+      "path": "app/admin/page.tsx",
+      "route": "/admin",
+      "kind": "page"
+    },
+    {
+      "path": "app/api/acceptance-tests/run/route.ts",
+      "route": "/api/acceptance-tests/run",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/admin/audit/route.ts",
+      "route": "/api/admin/audit",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/ai-evals/run/route.ts",
+      "route": "/api/ai-evals/run",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/ai/decisions/route.ts",
+      "route": "/api/ai/decisions",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/api-keys/[id]/revoke/route.ts",
+      "route": "/api/api-keys/[id]/revoke",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/api-keys/route.ts",
+      "route": "/api/api-keys",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/appointments/[id]/route.ts",
+      "route": "/api/appointments/[id]",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/appointments/route.ts",
+      "route": "/api/appointments",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/audit/export-bundle/route.ts",
+      "route": "/api/audit/export-bundle",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/auth/session/route.ts",
+      "route": "/api/auth/session",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/backups/snapshots/route.ts",
+      "route": "/api/backups/snapshots",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/billing/checkout-v2/route.ts",
+      "route": "/api/billing/checkout-v2",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/billing/checkout/route.ts",
+      "route": "/api/billing/checkout",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/billing/plans/route.ts",
+      "route": "/api/billing/plans",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/billing/subscription/route.ts",
+      "route": "/api/billing/subscription",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/billing/webhook/route.ts",
+      "route": "/api/billing/webhook",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/branding/[id]/css/route.ts",
+      "route": "/api/branding/[id]/css",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/calendar/google/callback/route.ts",
+      "route": "/api/calendar/google/callback",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/calendar/google/connect/route.ts",
+      "route": "/api/calendar/google/connect",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/calendar/slots/[id]/route.ts",
+      "route": "/api/calendar/slots/[id]",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/calendar/slots/route.ts",
+      "route": "/api/calendar/slots",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/campaigns/[id]/route.ts",
+      "route": "/api/campaigns/[id]",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/chat/gaps/route.ts",
+      "route": "/api/chat/gaps",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/chat/safe-answer/route.ts",
+      "route": "/api/chat/safe-answer",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/consents/route.ts",
+      "route": "/api/consents",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/cost-control/budgets/route.ts",
+      "route": "/api/cost-control/budgets",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/cost-control/usage/route.ts",
+      "route": "/api/cost-control/usage",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/customer-success/health/route.ts",
+      "route": "/api/customer-success/health",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/data-retention/run/route.ts",
+      "route": "/api/data-retention/run",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/deals/[id]/route.ts",
+      "route": "/api/deals/[id]",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/deals/route.ts",
+      "route": "/api/deals",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/demo/runs/route.ts",
+      "route": "/api/demo/runs",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/deployment/environments/route.ts",
+      "route": "/api/deployment/environments",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/domains/route.ts",
+      "route": "/api/domains",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/exports/listings/route.ts",
+      "route": "/api/exports/listings",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/feature-flags/route.ts",
+      "route": "/api/feature-flags",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/follow-ups/[id]/route.ts",
+      "route": "/api/follow-ups/[id]",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/follow-ups/route.ts",
+      "route": "/api/follow-ups",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/guardrails/evaluate/route.ts",
+      "route": "/api/guardrails/evaluate",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/health/route.ts",
+      "route": "/api/health",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/import/listings/route.ts",
+      "route": "/api/import/listings",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/integrations/route.ts",
+      "route": "/api/integrations",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/investor-demo/metrics/route.ts",
+      "route": "/api/investor-demo/metrics",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/jobs/process/route.ts",
+      "route": "/api/jobs/process",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/jobs/route.ts",
+      "route": "/api/jobs",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/launch/checklist/route.ts",
+      "route": "/api/launch/checklist",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/leads/[id]/follow-up/route.ts",
+      "route": "/api/leads/[id]/follow-up",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/leads/[id]/offer-draft/route.ts",
+      "route": "/api/leads/[id]/offer-draft",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/leads/[id]/recalculate-score/route.ts",
+      "route": "/api/leads/[id]/recalculate-score",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/leads/[id]/route.ts",
+      "route": "/api/leads/[id]",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/leads/route.ts",
+      "route": "/api/leads",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/listing-improvements/route.ts",
+      "route": "/api/listing-improvements",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/listings/[id]/ai/analyze-listing-score/route.ts",
+      "route": "/api/listings/[id]/ai/analyze-listing-score",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/listings/[id]/ai/generate-description/route.ts",
+      "route": "/api/listings/[id]/ai/generate-description",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/listings/[id]/ai/generate-faq/route.ts",
+      "route": "/api/listings/[id]/ai/generate-faq",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/listings/[id]/ai/generate-reels-script/route.ts",
+      "route": "/api/listings/[id]/ai/generate-reels-script",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/listings/[id]/ai/generate-social-posts/route.ts",
+      "route": "/api/listings/[id]/ai/generate-social-posts",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/listings/[id]/ai/generate-staging-plan/route.ts",
+      "route": "/api/listings/[id]/ai/generate-staging-plan",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/listings/[id]/ai/outputs/route.ts",
+      "route": "/api/listings/[id]/ai/outputs",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/listings/[id]/campaigns/generate/route.ts",
+      "route": "/api/listings/[id]/campaigns/generate",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/listings/[id]/compliance-audit/route.ts",
+      "route": "/api/listings/[id]/compliance-audit",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/listings/[id]/data-quality/route.ts",
+      "route": "/api/listings/[id]/data-quality",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/listings/[id]/export-package/route.ts",
+      "route": "/api/listings/[id]/export-package",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/listings/[id]/media/analyze/route.ts",
+      "route": "/api/listings/[id]/media/analyze",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/listings/[id]/media/upload/route.ts",
+      "route": "/api/listings/[id]/media/upload",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/listings/[id]/portal-export/route.ts",
+      "route": "/api/listings/[id]/portal-export",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/listings/[id]/publish-checklist/route.ts",
+      "route": "/api/listings/[id]/publish-checklist",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/listings/[id]/publish/route.ts",
+      "route": "/api/listings/[id]/publish",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/listings/[id]/reports/generate/route.ts",
+      "route": "/api/listings/[id]/reports/generate",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/listings/[id]/reports/route.ts",
+      "route": "/api/listings/[id]/reports",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/listings/[id]/route.ts",
+      "route": "/api/listings/[id]",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/listings/[id]/tours/route.ts",
+      "route": "/api/listings/[id]/tours",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/listings/[id]/translations/generate/route.ts",
+      "route": "/api/listings/[id]/translations/generate",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/listings/route.ts",
+      "route": "/api/listings",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/media/[mediaId]/route.ts",
+      "route": "/api/media/[mediaId]",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/monitoring/probes/route.ts",
+      "route": "/api/monitoring/probes",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/observability/slo/route.ts",
+      "route": "/api/observability/slo",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/ops/doctor/route.ts",
+      "route": "/api/ops/doctor",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/ops/handoff/route.ts",
+      "route": "/api/ops/handoff",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/ops/rbac/route.ts",
+      "route": "/api/ops/rbac",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/ops/readiness/route.ts",
+      "route": "/api/ops/readiness",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/ops/v10-readiness/route.ts",
+      "route": "/api/ops/v10-readiness",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/ops/v11-readiness/route.ts",
+      "route": "/api/ops/v11-readiness",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/ops/v12-readiness/route.ts",
+      "route": "/api/ops/v12-readiness",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/partner/leads/route.ts",
+      "route": "/api/partner/leads",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/partner/listings/route.ts",
+      "route": "/api/partner/listings",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/partner/v2/leads/route.ts",
+      "route": "/api/partner/v2/leads",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/partner/v2/listings/[id]/data-room/route.ts",
+      "route": "/api/partner/v2/listings/[id]/data-room",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/partner/v2/listings/route.ts",
+      "route": "/api/partner/v2/listings",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/portal-exports/[id]/route.ts",
+      "route": "/api/portal-exports/[id]",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/privacy/dsar/route.ts",
+      "route": "/api/privacy/dsar",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/product-feedback/route.ts",
+      "route": "/api/product-feedback",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/proposals/generate/route.ts",
+      "route": "/api/proposals/generate",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/proposals/route.ts",
+      "route": "/api/proposals",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/providers/health/route.ts",
+      "route": "/api/providers/health",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/public/listings/[slug]/book/route.ts",
+      "route": "/api/public/listings/[slug]/book",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/public/listings/[slug]/chat/route.ts",
+      "route": "/api/public/listings/[slug]/chat",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/public/listings/[slug]/data-room/route.ts",
+      "route": "/api/public/listings/[slug]/data-room",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/public/listings/[slug]/events/route.ts",
+      "route": "/api/public/listings/[slug]/events",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/public/listings/[slug]/lead/route.ts",
+      "route": "/api/public/listings/[slug]/lead",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/public/listings/[slug]/route.ts",
+      "route": "/api/public/listings/[slug]",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/releases/route.ts",
+      "route": "/api/releases",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/reports/[id]/export/route.ts",
+      "route": "/api/reports/[id]/export",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/reports/[id]/pdf/route.ts",
+      "route": "/api/reports/[id]/pdf",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/reports/[id]/send/route.ts",
+      "route": "/api/reports/[id]/send",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/sandbox/reset-plan/route.ts",
+      "route": "/api/sandbox/reset-plan",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/secrets/rotation/route.ts",
+      "route": "/api/secrets/rotation",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/security/events/route.ts",
+      "route": "/api/security/events",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/seller/activities/route.ts",
+      "route": "/api/seller/activities",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/team/invites/route.ts",
+      "route": "/api/team/invites",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/tenant-boundary/audit/route.ts",
+      "route": "/api/tenant-boundary/audit",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/tours/[tourId]/hotspots/route.ts",
+      "route": "/api/tours/[tourId]/hotspots",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/tours/[tourId]/nodes/route.ts",
+      "route": "/api/tours/[tourId]/nodes",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/uploads/intent/route.ts",
+      "route": "/api/uploads/intent",
+      "kind": "api"
+    },
+    {
+      "path": "app/api/valuation/comparables/route.ts",
+      "route": "/api/valuation/comparables",
+      "kind": "api"
+    },
+    {
+      "path": "app/dashboard/acceptance/page.tsx",
+      "route": "/dashboard/acceptance",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/ai-decisions/page.tsx",
+      "route": "/dashboard/ai-decisions",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/ai-evals/page.tsx",
+      "route": "/dashboard/ai-evals",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/analytics/page.tsx",
+      "route": "/dashboard/analytics",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/api-keys/page.tsx",
+      "route": "/dashboard/api-keys",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/appointments/page.tsx",
+      "route": "/dashboard/appointments",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/audit-exports/page.tsx",
+      "route": "/dashboard/audit-exports",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/automation/page.tsx",
+      "route": "/dashboard/automation",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/backups/page.tsx",
+      "route": "/dashboard/backups",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/billing/page.tsx",
+      "route": "/dashboard/billing",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/branding/page.tsx",
+      "route": "/dashboard/branding",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/buyer-intel/page.tsx",
+      "route": "/dashboard/buyer-intel",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/calendar/page.tsx",
+      "route": "/dashboard/calendar",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/campaigns/page.tsx",
+      "route": "/dashboard/campaigns",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/chat-gaps/page.tsx",
+      "route": "/dashboard/chat-gaps",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/compliance/page.tsx",
+      "route": "/dashboard/compliance",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/consents/page.tsx",
+      "route": "/dashboard/consents",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/cost-control/page.tsx",
+      "route": "/dashboard/cost-control",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/customer-success/page.tsx",
+      "route": "/dashboard/customer-success",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/daily/page.tsx",
+      "route": "/dashboard/daily",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/data-privacy/page.tsx",
+      "route": "/dashboard/data-privacy",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/deals/page.tsx",
+      "route": "/dashboard/deals",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/demo-center/page.tsx",
+      "route": "/dashboard/demo-center",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/deployment/page.tsx",
+      "route": "/dashboard/deployment",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/domains/page.tsx",
+      "route": "/dashboard/domains",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/feature-flags/page.tsx",
+      "route": "/dashboard/feature-flags",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/follow-ups/page.tsx",
+      "route": "/dashboard/follow-ups",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/guardrails/page.tsx",
+      "route": "/dashboard/guardrails",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/handoff/page.tsx",
+      "route": "/dashboard/handoff",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/import-export/page.tsx",
+      "route": "/dashboard/import-export",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/integrations/page.tsx",
+      "route": "/dashboard/integrations",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/investor-demo/page.tsx",
+      "route": "/dashboard/investor-demo",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/launch/page.tsx",
+      "route": "/dashboard/launch",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/leads/[id]/page.tsx",
+      "route": "/dashboard/leads/[id]",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/leads/page.tsx",
+      "route": "/dashboard/leads",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/listing-improvements/page.tsx",
+      "route": "/dashboard/listing-improvements",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/listings/[id]/page.tsx",
+      "route": "/dashboard/listings/[id]",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/listings/new/page.tsx",
+      "route": "/dashboard/listings/new",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/listings/page.tsx",
+      "route": "/dashboard/listings",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/monitoring/page.tsx",
+      "route": "/dashboard/monitoring",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/observability/page.tsx",
+      "route": "/dashboard/observability",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/onboarding/page.tsx",
+      "route": "/dashboard/onboarding",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/ops/page.tsx",
+      "route": "/dashboard/ops",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/page.tsx",
+      "route": "/dashboard",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/partner-api/page.tsx",
+      "route": "/dashboard/partner-api",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/portal-exports/page.tsx",
+      "route": "/dashboard/portal-exports",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/product-feedback/page.tsx",
+      "route": "/dashboard/product-feedback",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/proposals/page.tsx",
+      "route": "/dashboard/proposals",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/providers/page.tsx",
+      "route": "/dashboard/providers",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/quality/page.tsx",
+      "route": "/dashboard/quality",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/releases/page.tsx",
+      "route": "/dashboard/releases",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/reports/page.tsx",
+      "route": "/dashboard/reports",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/retention/page.tsx",
+      "route": "/dashboard/retention",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/sales/page.tsx",
+      "route": "/dashboard/sales",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/sandbox/page.tsx",
+      "route": "/dashboard/sandbox",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/secrets/page.tsx",
+      "route": "/dashboard/secrets",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/security/page.tsx",
+      "route": "/dashboard/security",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/seller-activities/page.tsx",
+      "route": "/dashboard/seller-activities",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/settings/page.tsx",
+      "route": "/dashboard/settings",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/sla/page.tsx",
+      "route": "/dashboard/sla",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/support/page.tsx",
+      "route": "/dashboard/support",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/team/page.tsx",
+      "route": "/dashboard/team",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/tenant-boundary/page.tsx",
+      "route": "/dashboard/tenant-boundary",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/translations/page.tsx",
+      "route": "/dashboard/translations",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/uploads/page.tsx",
+      "route": "/dashboard/uploads",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/v11-readiness/page.tsx",
+      "route": "/dashboard/v11-readiness",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/v12-readiness/page.tsx",
+      "route": "/dashboard/v12-readiness",
+      "kind": "page"
+    },
+    {
+      "path": "app/dashboard/valuation/page.tsx",
+      "route": "/dashboard/valuation",
+      "kind": "page"
+    },
+    {
+      "path": "app/listing/[slug]/page.tsx",
+      "route": "/listing/[slug]",
+      "kind": "page"
+    },
+    {
+      "path": "app/page.tsx",
+      "route": "/",
+      "kind": "page"
+    },
+    {
+      "path": "app/seller/[token]/page.tsx",
+      "route": "/seller/[token]",
+      "kind": "page"
+    }
+  ]
+}

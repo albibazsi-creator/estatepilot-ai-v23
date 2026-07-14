@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "fileCount": 607,
+  "byExt": {
+    ".example": 3,
+    ".yml": 6,
+    "[none]": 4,
+    ".md": 90,
+    ".tsx": 144,
+    ".ts": 339,
+    ".css": 1,
+    ".json": 11,
+    ".js": 1,
+    ".prisma": 1,
+    ".mjs": 6,
+    ".py": 1
+  },
+  "checksum": "5e63ecaba1f6ca508d26dd1c3377ae1d",
+  "missingDocs": [],
+  "generatedAt": "2026-07-14T14:50:21.520Z"
+}

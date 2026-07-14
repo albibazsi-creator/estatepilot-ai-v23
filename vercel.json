@@ -1,0 +1,9 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "npm run prisma:validate && npm run build",
+  "installCommand": "npm ci",
+  "regions": ["fra1"],
+  "env": {
+    "APP_ENV": "production"
+  }
+}

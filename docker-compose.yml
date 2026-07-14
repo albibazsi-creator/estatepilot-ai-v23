@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: estatepilot
+      POSTGRES_PASSWORD: estatepilot
+      POSTGRES_DB: estatepilot
+    ports:
+      - "5432:5432"
+    volumes:
+      - estatepilot_pg:/var/lib/postgresql/data
+volumes:
+  estatepilot_pg:

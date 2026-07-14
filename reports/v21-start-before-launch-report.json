@@ -1,0 +1,19 @@
+{
+  "version": "0.22.0",
+  "check": "v21-start-before-launch",
+  "status": "PASS",
+  "checksum": "dabe5c754aefb51b2b4f8893",
+  "requiredFiles": 21,
+  "missing": [],
+  "missingScripts": [],
+  "badRoutes": [],
+  "badPages": [],
+  "sixGaps": [
+    "stable build/runtime hardening",
+    "live AI provider wiring",
+    "live 3D/digital twin provider bridge",
+    "premium UX demo shell",
+    "CRM/sales automation live loop",
+    "launch integrations matrix"
+  ]
+}

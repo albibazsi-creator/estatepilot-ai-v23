@@ -1,0 +1,26 @@
+name: EstatePilot Release Gates
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment
+        required: true
+        default: staging
+        type: choice
+        options: [staging, production]
+
+jobs:
+  release-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run release:v13-check
+        env:
+          RELEASE_COMMIT_SHA: ${{ github.sha }}
+          ENABLE_STRICT_RELEASE_GATES: ${{ inputs.environment == 'production' }}

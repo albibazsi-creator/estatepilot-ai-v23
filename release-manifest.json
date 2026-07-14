@@ -1,0 +1,68 @@
+{
+  "name": "estatepilot-ai-mvp",
+  "version": "0.22.0",
+  "release": "v21-start-before-launch-six-gap-hardening",
+  "createdAt": "2026-07-14T14:45:05Z",
+  "focus": "Start el\u0151tti hat amerikai-szint\u0171 gap bevezet\u00e9se: stabil build/runtime gate, live AI wiring, live 3D provider bridge, premium UX demo, CRM automation \u00e9s integr\u00e1ci\u00f3s launch matrix.",
+  "file_count": 576,
+  "api_route_count": 165,
+  "page_count": 115,
+  "prisma_model_count": 128,
+  "new_v21_modules": [
+    "start_before_launch_readiness",
+    "build_runtime_hardening",
+    "live_ai_provider_wiring",
+    "live_3d_provider_bridge",
+    "premium_demo_flow",
+    "live_crm_automation",
+    "integration_launch_matrix"
+  ],
+  "new_dashboards": [
+    "/dashboard/v21-start",
+    "/dashboard/start-hardening",
+    "/dashboard/live-ai",
+    "/dashboard/live-3d",
+    "/dashboard/premium-demo",
+    "/dashboard/live-crm",
+    "/dashboard/integration-launch"
+  ],
+  "new_api_routes": [
+    "/api/ops/v21-start-readiness",
+    "/api/start/hardening",
+    "/api/live/ai/wiring",
+    "/api/live/3d/provider-bridge",
+    "/api/premium-demo/flow",
+    "/api/live-crm/automation",
+    "/api/integrations/launch"
+  ],
+  "validated_in_sandbox": [
+    "npm run release:v21-check"
+  ],
+  "must_run_locally": [
+    "npm install",
+    "npm run db:push",
+    "npm run db:seed",
+    "npm run typecheck",
+    "npm run build",
+    "npm run dev"
+  ],
+  "primaryCheck": "npm run release:v21-check",
+  "known_limitations": [
+    "V21 artifact QA can run without dependency install.",
+    "Full npm install, Prisma client generation, typecheck and Next.js build still need to run on the target machine.",
+    "OpenAI, R2/S3, Resend, Auth, monitoring and optional Calendar/Billing credentials must be configured before live pilot."
+  ],
+  "label": "V22 American-grade start hardening",
+  "checks": [
+    "release:v22-check",
+    "release:v22-full"
+  ],
+  "added": [
+    "production build proof gate",
+    "live AI SLA gate",
+    "spatial provider acceptance",
+    "premium UX benchmark",
+    "CRM automation QA",
+    "provider certification matrix"
+  ]
+}

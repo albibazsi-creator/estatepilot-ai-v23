@@ -1,0 +1,36 @@
+{
+  "ok": true,
+  "results": [
+    {
+      "scenario": "agent_listing",
+      "ok": true,
+      "missing": []
+    },
+    {
+      "scenario": "ai_generation",
+      "ok": true,
+      "missing": []
+    },
+    {
+      "scenario": "public_lead",
+      "ok": true,
+      "missing": []
+    },
+    {
+      "scenario": "seller_report",
+      "ok": true,
+      "missing": []
+    },
+    {
+      "scenario": "3d_production",
+      "ok": true,
+      "missing": []
+    },
+    {
+      "scenario": "v20_testing",
+      "ok": true,
+      "missing": []
+    }
+  ],
+  "generatedAt": "2026-07-14T14:50:21.181Z"
+}

@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "version": "0.22.0",
+  "files": 607,
+  "routeFiles": 172,
+  "pageFiles": 122,
+  "codeFiles": 490,
+  "failures": [],
+  "warnings": [],
+  "notes": [
+    {
+      "check": "prisma-model-count",
+      "value": 134
+    }
+  ]
+}

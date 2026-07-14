@@ -1,0 +1,2456 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  AGENT
+  AGENCY_OWNER
+  BUYER
+  SELLER
+}
+
+enum ListingStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  PANORAMA_360
+  FLOORPLAN
+}
+
+enum TourType {
+  MATTERPORT
+  IFRAME
+  PANORAMA_360
+  CUSTOM_360
+  GAUSSIAN_SPLAT
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  BOOKED
+  OFFER
+  LOST
+  WON
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+
+enum AiJobStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+  SKIPPED
+}
+
+enum WebhookStatus {
+  RECEIVED
+  PROCESSED
+  FAILED
+}
+
+
+enum TaskStatus {
+  OPEN
+  DONE
+  SNOOZED
+  CANCELLED
+}
+
+enum CampaignStatus {
+  DRAFT
+  READY
+  PUBLISHED
+  ARCHIVED
+}
+
+enum CalendarSlotStatus {
+  OPEN
+  HELD
+  BOOKED
+  BLOCKED
+}
+
+model User {
+  id             String         @id @default(cuid())
+  name           String
+  email          String         @unique
+  passwordHash   String?
+  authProviderId String?
+  role           UserRole       @default(AGENT)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  agencyMembers  AgencyMember[]
+  listings       Listing[]      @relation("AgentListings")
+  leads          Lead[]         @relation("AgentLeads")
+  appointments   Appointment[]  @relation("AgentAppointments")
+  followUpTasks  FollowUpTask[] @relation("AssignedTasks")
+  calendarSlots  CalendarSlot[] @relation("AgentSlots")
+}
+
+model Agency {
+  id               String         @id @default(cuid())
+  name             String
+  logoUrl          String?
+  billingEmail     String?
+  subscriptionPlan String?        @default("manual")
+  createdAt        DateTime       @default(now())
+  members          AgencyMember[]
+  listings         Listing[]
+  subscriptions    Subscription[]
+  jobs             AiJob[]
+  notifications    NotificationLog[]
+  apiKeys          ApiKey[]
+  webhookEvents    WebhookEvent[]
+  marketingCampaigns MarketingCampaign[]
+  integrations      Integration[]
+}
+
+model AgencyMember {
+  id        String   @id @default(cuid())
+  agencyId  String
+  userId    String
+  role      UserRole @default(AGENT)
+  agency    Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([agencyId, userId])
+}
+
+model Listing {
+  id             String         @id @default(cuid())
+  agencyId       String
+  agentId        String
+  title          String
+  slug           String         @unique
+  propertyType   String
+  sellerName     String?
+  sellerEmail    String?
+  ownerReportEmail String?
+  neighborhood   String?
+  parking        String?
+  balcony        String?
+  heating        String?
+  orientation    String?
+  energyRating   String?
+  latitude       Float?
+  longitude      Float?
+  currency       String         @default("HUF")
+  aiReadinessScore Int          @default(0)
+  status         ListingStatus  @default(DRAFT)
+  city           String
+  district       String?
+  addressOptional String?
+  price          Int?
+  sizeM2         Float?
+  rooms          Float?
+  bedrooms       Int?
+  bathrooms      Int?
+  floor          String?
+  condition      String?
+  descriptionRaw String?
+  descriptionAi  String?
+  isPublished    Boolean        @default(false)
+  publishedAt    DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  agency         Agency         @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  agent          User           @relation("AgentListings", fields: [agentId], references: [id])
+  media          ListingMedia[]
+  tours          Tour[]
+  floorplans     Floorplan[]
+  aiOutputs      AiOutput[]
+  leads          Lead[]
+  leadEvents     LeadEvent[]
+  appointments   Appointment[]
+  sellerReports  SellerReport[]
+  aiJobs         AiJob[]
+  notifications  NotificationLog[]
+  chatSessions   ChatSession[]
+  marketingCampaigns MarketingCampaign[]
+  followUpTasks  FollowUpTask[]
+  calendarSlots  CalendarSlot[]
+}
+
+model ListingMedia {
+  id                 String   @id @default(cuid())
+  listingId          String
+  mediaType          MediaType
+  url                String
+  originalUrl        String?
+  thumbnailUrl       String?
+  storageProvider    String   @default("local")
+  storageKey         String?
+  fileSizeBytes      Int?
+  mimeType           String?
+  width              Int?
+  height             Int?
+  processingStatus   String   @default("ready")
+  roomLabel          String?
+  aiTags             Json?
+  qualityScore       Int?
+  isCover            Boolean  @default(false)
+  isStaged           Boolean  @default(false)
+  disclosureRequired Boolean  @default(false)
+  sortOrder          Int      @default(0)
+  createdAt          DateTime @default(now())
+  listing            Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+}
+
+model Tour {
+  id        String     @id @default(cuid())
+  listingId String
+  tourType  TourType
+  provider  String?
+  embedUrl  String?
+  status    String     @default("ready")
+  createdAt DateTime   @default(now())
+  listing   Listing    @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  nodes     TourNode[]
+  hotspots  TourHotspot[]
+}
+
+model TourNode {
+  id          String   @id @default(cuid())
+  tourId      String
+  roomName    String
+  panoramaUrl String?
+  positionX   Float?
+  positionY   Float?
+  positionZ   Float?
+  sortOrder   Int      @default(0)
+  tour        Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  outgoing    TourHotspot[] @relation("FromNode")
+  incoming    TourHotspot[] @relation("ToNode")
+}
+
+model TourHotspot {
+  id         String   @id @default(cuid())
+  tourId     String
+  fromNodeId String
+  toNodeId   String?
+  label      String
+  yaw        Float?
+  pitch      Float?
+  type       String   @default("room")
+  tour       Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  fromNode   TourNode @relation("FromNode", fields: [fromNodeId], references: [id], onDelete: Cascade)
+  toNode     TourNode? @relation("ToNode", fields: [toNodeId], references: [id], onDelete: SetNull)
+}
+
+model Floorplan {
+  id           String   @id @default(cuid())
+  listingId    String
+  fileUrl      String
+  type         String   @default("upload")
+  status       String   @default("ready")
+  metadataJson Json?
+  createdAt    DateTime @default(now())
+  listing      Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+}
+
+model AiOutput {
+  id          String   @id @default(cuid())
+  listingId   String
+  outputType  String
+  contentJson Json
+  modelUsed   String?
+  createdAt   DateTime @default(now())
+  listing     Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+}
+
+model Lead {
+  id            String       @id @default(cuid())
+  listingId     String
+  agentId       String
+  name          String
+  email         String?
+  phone         String?
+  message       String?
+  buyingIntent  String?
+  financingType String?
+  moveTimeline  String?
+  source        String       @default("public_listing")
+  leadScore     Int          @default(0)
+  aiSummary     String?
+  lastContactedAt DateTime?
+  nextFollowUpAt DateTime?
+  gdprConsentAt DateTime?
+  gdprSource    String?
+  status        LeadStatus   @default(NEW)
+  createdAt     DateTime     @default(now())
+  listing       Listing      @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  agent         User         @relation("AgentLeads", fields: [agentId], references: [id])
+  events        LeadEvent[]
+  appointments  Appointment[]
+  notifications NotificationLog[]
+  chatSessions  ChatSession[]
+  followUpTasks FollowUpTask[]
+}
+
+model LeadEvent {
+  id           String   @id @default(cuid())
+  leadId       String?
+  listingId    String
+  eventType    String
+  metadataJson Json?
+  createdAt    DateTime @default(now())
+  lead         Lead?    @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  listing      Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+}
+
+model Appointment {
+  id        String            @id @default(cuid())
+  leadId    String
+  listingId String
+  agentId   String
+  startTime DateTime
+  endTime   DateTime
+  status    AppointmentStatus @default(PENDING)
+  createdAt DateTime          @default(now())
+  lead      Lead              @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  listing   Listing           @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  agent     User              @relation("AgentAppointments", fields: [agentId], references: [id])
+}
+
+model SellerReport {
+  id           String    @id @default(cuid())
+  listingId    String
+  periodStart  DateTime
+  periodEnd    DateTime
+  metricsJson  Json
+  aiSummary    String
+  sellerEmail  String?
+  shareToken   String?   @unique
+  status       String    @default("draft")
+  sentAt       DateTime?
+  createdAt    DateTime  @default(now())
+  listing      Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
+}
+
+model Subscription {
+  id                 String   @id @default(cuid())
+  agencyId           String
+  plan               String
+  status             String
+  currentPeriodStart DateTime?
+  currentPeriodEnd   DateTime?
+  paymentProvider    String?
+  createdAt          DateTime @default(now())
+  agency             Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  actorUserId String?
+  action      String
+  entityType  String
+  entityId    String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+}
+
+model AiJob {
+  id          String      @id @default(cuid())
+  agencyId    String
+  listingId   String?
+  type        String
+  status      AiJobStatus @default(PENDING)
+  priority    Int         @default(50)
+  payload     Json?
+  result      Json?
+  attempts    Int         @default(0)
+  maxAttempts Int         @default(3)
+  lockedAt    DateTime?
+  finishedAt  DateTime?
+  error       String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  agency      Agency      @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  listing     Listing?    @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([status, priority, createdAt])
+  @@index([agencyId, type])
+}
+
+model NotificationLog {
+  id               String             @id @default(cuid())
+  agencyId          String
+  listingId         String?
+  leadId            String?
+  channel           String
+  to                String
+  subject           String?
+  status            NotificationStatus @default(PENDING)
+  payloadJson       Json?
+  provider          String?
+  providerResponse  Json?
+  error             String?
+  sentAt            DateTime?
+  createdAt         DateTime           @default(now())
+  agency            Agency             @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  listing           Listing?           @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  lead              Lead?              @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  @@index([agencyId, status, createdAt])
+}
+
+model ApiKey {
+  id          String   @id @default(cuid())
+  agencyId    String
+  name        String
+  keyHash     String
+  prefix      String
+  scopes      String[]
+  lastUsedAt  DateTime?
+  revokedAt   DateTime?
+  createdAt   DateTime @default(now())
+  agency      Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  @@unique([agencyId, prefix])
+}
+
+model WebhookEvent {
+  id          String        @id @default(cuid())
+  agencyId    String?
+  provider    String
+  eventType   String
+  externalId  String?
+  status      WebhookStatus @default(RECEIVED)
+  payloadJson Json
+  error       String?
+  createdAt   DateTime      @default(now())
+  processedAt DateTime?
+  agency      Agency?       @relation(fields: [agencyId], references: [id], onDelete: SetNull)
+
+  @@index([provider, eventType, createdAt])
+  @@unique([provider, externalId])
+}
+
+
+
+model ChatSession {
+  id          String        @id @default(cuid())
+  listingId   String
+  leadId      String?
+  visitorId   String?
+  summary     String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  listing     Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  lead        Lead?         @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  messages    ChatMessage[]
+
+  @@index([listingId, createdAt])
+  @@index([leadId])
+}
+
+model ChatMessage {
+  id          String      @id @default(cuid())
+  sessionId   String
+  role        String
+  content     String
+  confidence  String?
+  createdAt   DateTime    @default(now())
+  session     ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+model MarketingCampaign {
+  id                    String         @id @default(cuid())
+  agencyId              String
+  listingId             String
+  name                  String
+  objective             String         @default("lead_generation")
+  status                CampaignStatus @default(DRAFT)
+  audienceJson          Json?
+  assetsJson            Json?
+  budgetSuggestionJson  Json?
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+  agency                Agency         @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  listing               Listing        @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([agencyId, status, createdAt])
+  @@index([listingId])
+}
+
+model FollowUpTask {
+  id              String      @id @default(cuid())
+  listingId       String?
+  leadId          String?
+  assignedUserId  String?
+  title           String
+  description     String?
+  priority        Int         @default(50)
+  status          TaskStatus  @default(OPEN)
+  dueAt           DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  listing         Listing?    @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  lead            Lead?       @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  assignedUser    User?       @relation("AssignedTasks", fields: [assignedUserId], references: [id], onDelete: SetNull)
+
+  @@index([assignedUserId, status, dueAt])
+  @@index([listingId, status])
+}
+
+model CalendarSlot {
+  id          String             @id @default(cuid())
+  listingId   String?
+  agentId     String
+  startTime   DateTime
+  endTime     DateTime
+  status      CalendarSlotStatus @default(OPEN)
+  note        String?
+  createdAt   DateTime           @default(now())
+  listing     Listing?           @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  agent       User               @relation("AgentSlots", fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@index([agentId, status, startTime])
+  @@index([listingId, startTime])
+}
+
+model Integration {
+  id           String   @id @default(cuid())
+  agencyId     String
+  provider     String
+  type         String
+  status       String   @default("mock")
+  configJson   Json?
+  connectedAt  DateTime?
+  updatedAt    DateTime @updatedAt
+  createdAt    DateTime @default(now())
+  agency       Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  @@unique([agencyId, provider, type])
+}
+
+
+model UploadObject {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  listingId      String?
+  provider       String
+  storageKey     String
+  publicUrl      String?
+  mimeType       String?
+  fileSizeBytes  Int?
+  status         String   @default("created")
+  checksum       String?
+  metadataJson   Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([agencyId, createdAt])
+  @@index([listingId, createdAt])
+  @@unique([provider, storageKey])
+}
+
+model BillingCustomer {
+  id                 String   @id @default(cuid())
+  agencyId           String
+  provider           String
+  externalCustomerId String?
+  billingEmail       String?
+  metadataJson       Json?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@unique([agencyId, provider])
+}
+
+model PaymentRecord {
+  id                  String   @id @default(cuid())
+  agencyId            String
+  listingId           String?
+  provider            String
+  externalPaymentId   String?
+  checkoutUrl         String?
+  plan                String
+  amount              Int
+  currency            String   @default("HUF")
+  status              String   @default("created")
+  metadataJson        Json?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([agencyId, status, createdAt])
+  @@unique([provider, externalPaymentId])
+}
+
+model InvoiceRecord {
+  id                  String   @id @default(cuid())
+  agencyId            String
+  paymentRecordId     String?
+  provider            String   @default("szamlazzhu")
+  externalInvoiceId   String?
+  invoiceNumber       String?
+  buyerName           String?
+  buyerEmail          String?
+  amount              Int
+  currency            String   @default("HUF")
+  status              String   @default("draft")
+  pdfUrl              String?
+  metadataJson        Json?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([agencyId, status, createdAt])
+}
+
+model CalendarConnection {
+  id                   String   @id @default(cuid())
+  agencyId             String
+  userId               String
+  provider             String   @default("google")
+  externalAccountEmail String?
+  status               String   @default("mock")
+  accessTokenEncrypted String?
+  refreshTokenEncrypted String?
+  expiresAt            DateTime?
+  metadataJson         Json?
+  connectedAt          DateTime?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@unique([agencyId, userId, provider])
+}
+
+model AiTrace {
+  id           String   @id @default(cuid())
+  agencyId     String?
+  listingId    String?
+  operation    String
+  model        String?
+  provider     String   @default("openai")
+  inputSummary String?
+  outputSummary String?
+  status       String   @default("success")
+  latencyMs    Int?
+  tokenUsageJson Json?
+  error        String?
+  createdAt    DateTime @default(now())
+
+  @@index([agencyId, operation, createdAt])
+  @@index([listingId, createdAt])
+}
+
+
+enum PortalExportStatus {
+  DRAFT
+  GENERATED
+  DOWNLOADED
+  SENT
+  FAILED
+}
+
+model PortalExport {
+  id             String             @id @default(cuid())
+  agencyId       String
+  listingId      String
+  targetPortal   String
+  status         PortalExportStatus @default(DRAFT)
+  format         String             @default("json")
+  fileUrl        String?
+  payloadJson    Json
+  validationJson Json?
+  generatedById  String?
+  generatedAt    DateTime?
+  downloadedAt   DateTime?
+  error          String?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@index([agencyId, targetPortal, createdAt])
+  @@index([listingId, status])
+}
+
+model ConsentRecord {
+  id            String    @id @default(cuid())
+  agencyId      String?
+  listingId     String?
+  leadId        String?
+  purpose       String
+  subjectEmail  String?
+  subjectPhone  String?
+  source        String
+  ipHash        String?
+  userAgent     String?
+  consentText   String
+  acceptedAt    DateTime  @default(now())
+  revokedAt     DateTime?
+  metadataJson  Json?
+  createdAt     DateTime  @default(now())
+
+  @@index([agencyId, purpose, acceptedAt])
+  @@index([leadId])
+  @@index([subjectEmail])
+}
+
+model DataQualityIssue {
+  id             String   @id @default(cuid())
+  agencyId       String
+  listingId      String?
+  entityType     String
+  entityId       String?
+  severity       String
+  code           String
+  title          String
+  description    String
+  suggestedFix   String?
+  status         String   @default("open")
+  metadataJson   Json?
+  createdAt      DateTime @default(now())
+  resolvedAt     DateTime?
+
+  @@index([agencyId, severity, status, createdAt])
+  @@index([listingId, status])
+}
+
+model FeatureFlag {
+  id            String   @id @default(cuid())
+  agencyId      String?
+  key           String
+  enabled       Boolean  @default(false)
+  description   String?
+  rolloutJson   Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([agencyId, key])
+  @@index([key, enabled])
+}
+
+model SecurityEvent {
+  id            String   @id @default(cuid())
+  agencyId      String?
+  actorUserId   String?
+  eventType     String
+  severity      String   @default("info")
+  ipHash        String?
+  userAgent     String?
+  metadataJson  Json?
+  createdAt     DateTime @default(now())
+
+  @@index([agencyId, severity, createdAt])
+  @@index([eventType, createdAt])
+}
+
+
+// V8: agency/team, deal pipeline, proposal, valuation, seller activity, demo run, chat gap models.
+model TeamInvite {
+  id             String   @id @default(cuid())
+  agencyId       String
+  email          String
+  role           String   @default("AGENT")
+  status         String   @default("pending")
+  invitedById    String?
+  token          String   @unique
+  expiresAt      DateTime?
+  acceptedAt     DateTime?
+  metadataJson   Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([agencyId, status, createdAt])
+  @@index([email])
+}
+
+model DealPipelineItem {
+  id                  String   @id @default(cuid())
+  agencyId            String
+  listingId           String?
+  leadId              String?
+  ownerUserId         String?
+  title               String
+  stage               String   @default("new_lead")
+  probability         Int      @default(10)
+  forecastValue       Int      @default(0)
+  currency            String   @default("HUF")
+  expectedCloseDate   DateTime?
+  nextStep            String?
+  riskLevel           String   @default("medium")
+  aiRecommendation    String?
+  metadataJson        Json?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([agencyId, stage, probability])
+  @@index([listingId])
+  @@index([leadId])
+}
+
+model ProposalDraft {
+  id               String   @id @default(cuid())
+  agencyId         String
+  listingId        String?
+  leadId           String?
+  dealId           String?
+  title            String
+  offerType        String   @default("viewing_followup")
+  status           String   @default("draft")
+  subject          String?
+  bodyMarkdown     String
+  callScript       String?
+  nextActionsJson  Json?
+  generatedById    String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([agencyId, status, createdAt])
+  @@index([listingId])
+  @@index([leadId])
+}
+
+model SellerPortalActivity {
+  id             String   @id @default(cuid())
+  agencyId       String
+  listingId      String
+  sellerEmail    String?
+  activityType   String
+  title          String
+  description    String?
+  impactScore    Int      @default(0)
+  metadataJson   Json?
+  createdAt      DateTime @default(now())
+
+  @@index([agencyId, listingId, createdAt])
+  @@index([sellerEmail])
+}
+
+model ValuationComparable {
+  id             String   @id @default(cuid())
+  agencyId       String
+  listingId      String?
+  source         String   @default("manual")
+  title          String
+  city           String
+  district       String?
+  price          Int
+  sizeM2         Float
+  rooms          Float?
+  pricePerM2     Int
+  url            String?
+  distanceKm     Float?
+  similarityScore Int     @default(50)
+  notes          String?
+  createdAt      DateTime @default(now())
+
+  @@index([agencyId, city, district])
+  @@index([listingId, similarityScore])
+}
+
+model DemoRun {
+  id            String   @id @default(cuid())
+  agencyId      String
+  name          String
+  targetPersona String   @default("independent_agent")
+  status        String   @default("planned")
+  stepsJson     Json
+  checklistJson Json?
+  resultJson    Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([agencyId, status, createdAt])
+}
+
+model ChatKnowledgeGap {
+  id            String   @id @default(cuid())
+  agencyId      String?
+  listingId     String
+  question      String
+  safeReply     String
+  severity      String   @default("medium")
+  status        String   @default("open")
+  suggestedFact String?
+  createdAt     DateTime @default(now())
+  resolvedAt    DateTime?
+
+  @@index([listingId, status, createdAt])
+  @@index([agencyId, severity])
+}
+
+// V9: white-label, localization, buyer intelligence, chat guardrails, partner API observability, SLA/support.
+model AgencyBrandingProfile {
+  id             String   @id @default(cuid())
+  agencyId       String
+  brandName      String
+  primaryColor   String   @default("#0f172a")
+  accentColor    String   @default("#c8a45d")
+  logoUrl        String?
+  faviconUrl     String?
+  fontFamily     String   @default("Inter")
+  publicTone     String   @default("premium_professional")
+  footerText     String?
+  customCss       String?
+  metadataJson   Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([agencyId, brandName])
+  @@index([agencyId])
+}
+
+model WhiteLabelDomain {
+  id             String   @id @default(cuid())
+  agencyId       String
+  domain         String   @unique
+  status         String   @default("pending_dns")
+  verificationToken String
+  verifiedAt     DateTime?
+  sslStatus      String   @default("pending")
+  metadataJson   Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([agencyId, status])
+}
+
+model ListingTranslation {
+  id             String   @id @default(cuid())
+  agencyId       String
+  listingId      String
+  locale         String
+  title          String
+  description    String
+  shortHook      String?
+  highlightsJson Json?
+  faqJson        Json?
+  disclosureText String?
+  status         String   @default("draft")
+  generatedBy    String   @default("ai_mock")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([listingId, locale])
+  @@index([agencyId, locale, status])
+}
+
+model LocalizationTerm {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  key            String
+  locale         String
+  value          String
+  context        String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([agencyId, key, locale])
+  @@index([locale, key])
+}
+
+model BuyerPersona {
+  id             String   @id @default(cuid())
+  agencyId       String
+  name           String
+  description    String
+  budgetMin      Int?
+  budgetMax      Int?
+  preferredCities String[]
+  preferredDistricts String[]
+  intent         String   @default("own_home")
+  financing      String?
+  mustHaveJson   Json?
+  niceToHaveJson Json?
+  negativeJson   Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([agencyId, intent])
+}
+
+model BuyerMatchScore {
+  id             String   @id @default(cuid())
+  agencyId       String
+  listingId      String
+  personaId      String?
+  leadId         String?
+  score          Int      @default(0)
+  fitLabel       String   @default("unknown")
+  reasonsJson    Json?
+  risksJson      Json?
+  nextAction     String?
+  createdAt      DateTime @default(now())
+
+  @@index([agencyId, listingId, score])
+  @@index([leadId])
+}
+
+model ChatGuardrailRule {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  key            String
+  title          String
+  severity       String   @default("medium")
+  enabled        Boolean  @default(true)
+  instruction    String
+  blockPatterns  String[]
+  safeReply      String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([agencyId, key])
+  @@index([enabled, severity])
+}
+
+model ChatGuardrailEvent {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  listingId      String?
+  sessionId      String?
+  ruleKey        String
+  userMessage    String
+  action         String   @default("safe_reply")
+  safeReply      String
+  metadataJson   Json?
+  createdAt      DateTime @default(now())
+
+  @@index([agencyId, ruleKey, createdAt])
+  @@index([listingId, createdAt])
+}
+
+model PartnerApiRequestLog {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  apiKeyPrefix   String?
+  endpoint       String
+  method         String
+  statusCode     Int
+  latencyMs      Int?
+  requestHash    String?
+  error          String?
+  createdAt      DateTime @default(now())
+
+  @@index([agencyId, endpoint, createdAt])
+  @@index([apiKeyPrefix, createdAt])
+}
+
+model SupportTicket {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  listingId      String?
+  openedByEmail  String?
+  category       String   @default("general")
+  priority       String   @default("normal")
+  status         String   @default("open")
+  subject        String
+  body           String
+  resolution     String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  resolvedAt     DateTime?
+
+  @@index([agencyId, status, priority, createdAt])
+}
+
+model SlaIncident {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  service        String
+  severity       String   @default("minor")
+  status         String   @default("investigating")
+  title          String
+  description    String?
+  startedAt      DateTime @default(now())
+  resolvedAt     DateTime?
+  metadataJson   Json?
+
+  @@index([service, status, startedAt])
+  @@index([agencyId, severity])
+}
+
+model OnboardingChecklistItem {
+  id             String   @id @default(cuid())
+  agencyId       String
+  key            String
+  title          String
+  description    String?
+  status         String   @default("todo")
+  ownerRole      String   @default("AGENCY_OWNER")
+  sortOrder      Int      @default(0)
+  completedAt    DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([agencyId, key])
+  @@index([agencyId, status, sortOrder])
+}
+
+model MarketDigestSnapshot {
+  id             String   @id @default(cuid())
+  agencyId       String
+  city           String
+  district       String?
+  periodLabel    String
+  metricsJson    Json
+  aiSummary      String
+  createdAt      DateTime @default(now())
+
+  @@index([agencyId, city, district, createdAt])
+}
+
+// V10: AI governance, privacy operations, customer success, feedback, backups, release management.
+model AiDecisionLog {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  listingId      String?
+  leadId         String?
+  actorUserId    String?
+  decisionType   String
+  modelName      String   @default("mock_or_external")
+  inputHash      String?
+  outputJson     Json
+  confidence     Int      @default(0)
+  riskLevel      String   @default("low")
+  explanation    String
+  approvedByUserId String?
+  approvedAt     DateTime?
+  createdAt      DateTime @default(now())
+
+  @@index([agencyId, decisionType, createdAt])
+  @@index([listingId, createdAt])
+  @@index([leadId, createdAt])
+}
+
+model DataSubjectRequest {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  requesterEmail String
+  requesterName  String?
+  requestType    String   @default("export")
+  status         String   @default("received")
+  scope          String   @default("leads_and_consents")
+  verificationStatus String @default("pending")
+  exportJson     Json?
+  redactionJson  Json?
+  notes          String?
+  dueAt          DateTime?
+  completedAt    DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([agencyId, status, createdAt])
+  @@index([requesterEmail, createdAt])
+}
+
+model CustomerSuccessHealth {
+  id             String   @id @default(cuid())
+  agencyId       String
+  healthScore    Int      @default(0)
+  plan           String?
+  lifecycleStage String   @default("onboarding")
+  activeListings Int      @default(0)
+  publishedListings Int   @default(0)
+  leadCount30d   Int      @default(0)
+  hotLeadCount30d Int     @default(0)
+  reportCount30d Int      @default(0)
+  riskSignalsJson Json?
+  expansionSignalsJson Json?
+  nextAction     String?
+  calculatedAt   DateTime @default(now())
+
+  @@index([agencyId, calculatedAt])
+  @@index([healthScore, lifecycleStage])
+}
+
+model ProductFeedback {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  userEmail      String?
+  source         String   @default("dashboard")
+  category       String   @default("general")
+  sentiment      String   @default("neutral")
+  score          Int?
+  message        String
+  linkedUrl      String?
+  status         String   @default("new")
+  metadataJson   Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([agencyId, category, status, createdAt])
+  @@index([sentiment, createdAt])
+}
+
+model ListingImprovementRecommendation {
+  id             String   @id @default(cuid())
+  agencyId       String
+  listingId      String
+  priority       Int      @default(50)
+  category       String
+  title          String
+  rationale      String
+  suggestedAction String
+  expectedImpact String?
+  status         String   @default("open")
+  createdAt      DateTime @default(now())
+  resolvedAt     DateTime?
+
+  @@index([agencyId, listingId, status, priority])
+  @@index([category, status])
+}
+
+model AiEvaluationRun {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  name           String
+  target         String   @default("property_chat")
+  status         String   @default("queued")
+  score          Int      @default(0)
+  passed         Int      @default(0)
+  failed         Int      @default(0)
+  warnings       Int      @default(0)
+  summary        String?
+  createdAt      DateTime @default(now())
+  completedAt    DateTime?
+
+  @@index([agencyId, target, createdAt])
+  @@index([status, createdAt])
+}
+
+model AiEvaluationCase {
+  id             String   @id @default(cuid())
+  runId          String
+  agencyId       String?
+  listingId      String?
+  caseKey        String
+  prompt         String
+  expectedBehavior String
+  actualAnswer   String?
+  result         String   @default("pending")
+  riskLevel      String   @default("low")
+  notes          String?
+  createdAt      DateTime @default(now())
+
+  @@index([runId, result])
+  @@index([agencyId, caseKey])
+}
+
+model BackupSnapshot {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  snapshotType   String   @default("metadata")
+  status         String   @default("created")
+  storageProvider String  @default("local")
+  storageKey     String?
+  checksum       String?
+  sizeBytes      Int?
+  includesJson   Json?
+  restoreNotes   String?
+  createdAt      DateTime @default(now())
+
+  @@index([agencyId, snapshotType, createdAt])
+  @@index([status, createdAt])
+}
+
+model ReleaseChannel {
+  id             String   @id @default(cuid())
+  name           String   @unique
+  environment    String   @default("demo")
+  version        String
+  status         String   @default("active")
+  rolloutPercent Int      @default(100)
+  guardrailsJson Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([environment, status])
+}
+
+model ChangelogEntry {
+  id             String   @id @default(cuid())
+  releaseChannelId String?
+  version        String
+  title          String
+  body           String
+  category       String   @default("feature")
+  visibleToCustomers Boolean @default(true)
+  createdAt      DateTime @default(now())
+
+  @@index([version, category])
+  @@index([visibleToCustomers, createdAt])
+}
+
+
+
+// V11: launch operations, tenant isolation checks, cost control, retention and investor demo controls.
+model AiCostBudget {
+  id             String   @id @default(cuid())
+  agencyId       String
+  periodLabel    String
+  currency       String   @default("HUF")
+  monthlyLimit   Int      @default(0)
+  hardLimit      Int      @default(0)
+  currentSpend   Int      @default(0)
+  warningThreshold Int    @default(80)
+  status         String   @default("active")
+  ownerEmail     String?
+  rulesJson      Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([agencyId, periodLabel])
+  @@index([agencyId, status])
+}
+
+model AiUsageEvent {
+  id             String   @id @default(cuid())
+  agencyId       String
+  listingId      String?
+  leadId         String?
+  feature        String
+  modelName      String   @default("mock_or_external")
+  inputTokens    Int      @default(0)
+  outputTokens   Int      @default(0)
+  estimatedCostHuf Int    @default(0)
+  status         String   @default("recorded")
+  traceId        String?
+  metadataJson   Json?
+  createdAt      DateTime @default(now())
+
+  @@index([agencyId, feature, createdAt])
+  @@index([listingId, createdAt])
+}
+
+model TenantBoundaryCheck {
+  id             String   @id @default(cuid())
+  agencyId       String
+  checkType      String
+  status         String   @default("passed")
+  riskLevel      String   @default("low")
+  entityType     String?
+  entityId       String?
+  summary        String
+  evidenceJson   Json?
+  remediation    String?
+  createdAt      DateTime @default(now())
+
+  @@index([agencyId, status, riskLevel])
+  @@index([checkType, createdAt])
+}
+
+model LaunchChecklistItem {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  key            String
+  title          String
+  area           String   @default("launch")
+  status         String   @default("todo")
+  severity       String   @default("medium")
+  owner          String?
+  dueAt          DateTime?
+  evidenceUrl    String?
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([agencyId, key])
+  @@index([agencyId, area, status])
+}
+
+model DemoSandboxSnapshot {
+  id             String   @id @default(cuid())
+  agencyId       String
+  name           String
+  status         String   @default("ready")
+  resetToken     String?
+  includesJson   Json?
+  lastResetAt    DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([agencyId, status])
+}
+
+model AuditExportBundle {
+  id             String   @id @default(cuid())
+  agencyId       String
+  exportType     String   @default("enterprise_audit")
+  status         String   @default("generated")
+  fileName       String
+  checksum       String?
+  payloadJson    Json
+  requestedByEmail String?
+  generatedAt    DateTime @default(now())
+
+  @@index([agencyId, exportType, generatedAt])
+}
+
+model DataRetentionPolicy {
+  id             String   @id @default(cuid())
+  agencyId       String
+  dataCategory   String
+  retentionDays  Int
+  legalBasis     String   @default("legitimate_interest")
+  action         String   @default("review_before_delete")
+  status         String   @default("active")
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([agencyId, dataCategory])
+  @@index([agencyId, status])
+}
+
+model DataRetentionRun {
+  id             String   @id @default(cuid())
+  agencyId       String
+  status         String   @default("completed")
+  mode           String   @default("dry_run")
+  summaryJson    Json
+  createdAt      DateTime @default(now())
+
+  @@index([agencyId, status, createdAt])
+}
+
+model MonitoringProbe {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  name           String
+  target         String
+  status         String   @default("unknown")
+  latencyMs      Int?
+  uptimePercent  Int      @default(100)
+  lastCheckedAt  DateTime?
+  metadataJson   Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([agencyId, status])
+  @@index([target, lastCheckedAt])
+}
+
+model IncidentPostmortem {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  incidentKey    String
+  severity       String   @default("minor")
+  status         String   @default("draft")
+  title          String
+  impactSummary  String
+  rootCause      String?
+  actionItemsJson Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([agencyId, status, severity])
+  @@index([incidentKey])
+}
+
+model InvestorDemoMetric {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  metricKey      String
+  label          String
+  value          String
+  category       String   @default("traction")
+  sortOrder      Int      @default(100)
+  evidenceJson   Json?
+  createdAt      DateTime @default(now())
+
+  @@index([agencyId, category, sortOrder])
+}
+
+model SalesPlaybookStep {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  persona        String   @default("independent_agent")
+  stage          String
+  title          String
+  script         String
+  objection      String?
+  answer         String?
+  sortOrder      Int      @default(100)
+  createdAt      DateTime @default(now())
+
+  @@index([agencyId, persona, sortOrder])
+}
+
+
+// V12: go-live controls, provider health, acceptance testing, secrets, domains, SLO and deploy readiness.
+model ProviderHealthCheck {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  provider       String
+  area           String
+  status         String   @default("unknown")
+  mode           String   @default("mock")
+  requiredEnvJson Json?
+  missingEnvJson Json?
+  latencyMs      Int?
+  lastCheckedAt  DateTime @default(now())
+  notes          String?
+  remediation    String?
+  metadataJson   Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([agencyId, provider, area])
+  @@index([agencyId, status, area])
+  @@index([provider, lastCheckedAt])
+}
+
+model DeploymentEnvironment {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  name           String
+  url            String?
+  branch         String?
+  status         String   @default("planned")
+  requiredEnvJson Json?
+  gatesJson      Json?
+  lastDeployAt   DateTime?
+  ownerEmail     String?
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([agencyId, name])
+  @@index([agencyId, status])
+}
+
+model AcceptanceTestRun {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  suite          String   @default("go_live_demo")
+  status         String   @default("pending")
+  score          Int      @default(0)
+  passed         Int      @default(0)
+  failed         Int      @default(0)
+  warnings       Int      @default(0)
+  stepsJson      Json
+  runByEmail     String?
+  durationMs     Int?
+  createdAt      DateTime @default(now())
+
+  @@index([agencyId, suite, createdAt])
+  @@index([status, createdAt])
+}
+
+model SyntheticJourney {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  key            String
+  title          String
+  status         String   @default("draft")
+  schedule       String   @default("manual")
+  lastStatus     String?
+  lastLatencyMs  Int?
+  lastRunAt      DateTime?
+  stepsJson      Json
+  ownerEmail     String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([agencyId, key])
+  @@index([agencyId, status])
+}
+
+model SecretRotationItem {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  provider       String
+  secretName     String
+  status         String   @default("not_configured")
+  rotationDays   Int      @default(90)
+  lastRotatedAt  DateTime?
+  nextDueAt      DateTime?
+  ownerEmail     String?
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([agencyId, provider, secretName])
+  @@index([agencyId, status, nextDueAt])
+}
+
+model ProductionDomain {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  domain         String
+  purpose        String   @default("app")
+  status         String   @default("planned")
+  dnsTarget      String?
+  sslStatus      String   @default("unknown")
+  lastCheckedAt  DateTime?
+  metadataJson   Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([agencyId, domain, purpose])
+  @@index([agencyId, status])
+}
+
+model MaintenanceWindow {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  title          String
+  status         String   @default("scheduled")
+  startsAt       DateTime
+  endsAt         DateTime
+  impact         String   @default("low")
+  publicMessage  String?
+  ownerEmail     String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([agencyId, status, startsAt])
+}
+
+model SloTarget {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  service        String
+  metric         String
+  target         Int
+  current        Int      @default(0)
+  status         String   @default("unknown")
+  window         String   @default("30d")
+  evidenceJson   Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([agencyId, service, metric, window])
+  @@index([agencyId, status])
+}
+
+model MigrationSafetyCheck {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  checkKey       String
+  status         String   @default("pending")
+  severity       String   @default("medium")
+  summary        String
+  remediation    String?
+  evidenceJson   Json?
+  createdAt      DateTime @default(now())
+
+  @@index([agencyId, status, severity])
+  @@index([checkKey, createdAt])
+}
+
+
+// V13: contract governance, release gates, usage metering and pilot onboarding.
+model ApiContractSnapshot {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  version        String   @default("v13")
+  status         String   @default("generated")
+  routeCount     Int      @default(0)
+  checksum       String
+  specJson       Json
+  createdByEmail String?
+  createdAt      DateTime @default(now())
+
+  @@index([agencyId, version, createdAt])
+  @@index([checksum])
+}
+
+model ErrorTaxonomyItem {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  code           String
+  category       String
+  severity       String   @default("medium")
+  httpStatus     Int      @default(500)
+  publicMessage  String
+  remediation    String?
+  ownerArea      String   @default("platform")
+  isRetryable    Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([agencyId, code])
+  @@index([agencyId, category, severity])
+}
+
+model UsageMeterRecord {
+  id               String   @id @default(cuid())
+  agencyId         String?
+  listingId        String?
+  leadId           String?
+  featureKey       String
+  quantity         Int      @default(1)
+  unit             String   @default("event")
+  estimatedCostHuf Int      @default(0)
+  source           String   @default("system")
+  metadataJson     Json?
+  occurredAt       DateTime @default(now())
+  createdAt        DateTime @default(now())
+
+  @@index([agencyId, featureKey, occurredAt])
+  @@index([listingId, featureKey])
+}
+
+model ReleaseGateRun {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  gateKey        String
+  status         String   @default("pending")
+  score          Int      @default(0)
+  checksJson     Json
+  commitSha      String?
+  runByEmail     String?
+  createdAt      DateTime @default(now())
+
+  @@index([agencyId, gateKey, createdAt])
+  @@index([status, createdAt])
+}
+
+model PilotOnboardingMilestone {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  key            String
+  title          String
+  status         String   @default("open")
+  ownerEmail     String?
+  dueAt          DateTime?
+  evidenceJson   Json?
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([agencyId, key])
+  @@index([agencyId, status, dueAt])
+}
+
+model DataMigrationPlan {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  name           String
+  status         String   @default("draft")
+  sourceSystem   String   @default("manual_csv")
+  targetScope    String   @default("listings_leads")
+  dryRunSummary  Json?
+  rollbackPlan   String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([agencyId, status, sourceSystem])
+}
+
+// V14: production core pilot flow, provider adapters, e2e scenario hardening and launch risk control.
+model CorePilotFlowRun {
+  id                  String   @id @default(cuid())
+  agencyId            String?
+  coreFlowVersion     String   @default("v14")
+  status              String   @default("warning")
+  score               Int      @default(0)
+  passed              Int      @default(0)
+  warnings            Int      @default(0)
+  failed              Int      @default(0)
+  checksJson          Json
+  blockersJson        Json?
+  recommendationsJson Json?
+  runByEmail          String?
+  createdAt           DateTime @default(now())
+
+  @@index([agencyId, status, createdAt])
+}
+
+model ProductionAdapterConfig {
+  id              String   @id @default(cuid())
+  agencyId        String?
+  adapterKey      String
+  provider        String
+  area            String
+  mode            String   @default("mock")
+  status          String   @default("mock")
+  requiredEnvJson Json
+  missingEnvJson  Json
+  fallbackMode    String?
+  ownerArea       String   @default("platform")
+  notes           String?
+  lastCheckedAt   DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([agencyId, adapterKey])
+  @@index([agencyId, status, area])
+}
+
+model E2eScenarioRun {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  scenarioKey    String
+  status         String   @default("warning")
+  score          Int      @default(0)
+  durationMs     Int?
+  stepsJson      Json
+  artifactsJson  Json?
+  runByEmail     String?
+  createdAt      DateTime @default(now())
+
+  @@index([agencyId, scenarioKey, createdAt])
+  @@index([status, createdAt])
+}
+
+model LaunchRiskItem {
+  id              String   @id @default(cuid())
+  agencyId        String?
+  key             String
+  title           String
+  severity        String   @default("medium")
+  status          String   @default("open")
+  ownerArea       String   @default("platform")
+  mitigation      String?
+  evidenceJson    Json?
+  targetResolvedAt DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([agencyId, key])
+  @@index([agencyId, status, severity])
+}
+
+model ProductionSmokeResult {
+  id             String   @id @default(cuid())
+  agencyId       String?
+  environment    String   @default("local")
+  status         String   @default("warning")
+  score          Int      @default(0)
+  checksJson     Json
+  commitSha      String?
+  createdAt      DateTime @default(now())
+
+  @@index([agencyId, environment, createdAt])
+  @@index([status, createdAt])
+}
+
+model ProviderSwitchTask {
+  id              String   @id @default(cuid())
+  agencyId        String?
+  adapterKey      String
+  title           String
+  status          String   @default("open")
+  sequence        Int      @default(0)
+  requiredEnvJson Json?
+  acceptanceJson  Json?
+  ownerEmail      String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([agencyId, adapterKey, status])
+}
+
+// V16: spatial capture, 3D provider pipeline and digital twin readiness.
+model ThreeDProviderConfig {
+  id              String   @id @default(cuid())
+  agencyId        String?
+  providerKey     String
+  providerName    String
+  mode            String   @default("mock")
+  status          String   @default("mock")
+  capabilitiesJson Json
+  requiredEnvJson Json?
+  missingEnvJson  Json?
+  costModelJson    Json?
+  notes           String?
+  lastCheckedAt   DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([agencyId, providerKey])
+  @@index([agencyId, status, mode])
+}
+
+model ThreeDCaptureSession {
+  id              String   @id @default(cuid())
+  agencyId        String?
+  listingId       String?
+  mode            String   @default("guided_photo_video")
+  status          String   @default("planned")
+  captureQualityScore Int  @default(0)
+  instructionsJson Json
+  requiredShotsJson Json?
+  deviceHintsJson Json?
+  operatorEmail   String?
+  startedAt       DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([agencyId, listingId, status])
+  @@index([status, createdAt])
+}
+
+model ThreeDAsset {
+  id              String   @id @default(cuid())
+  agencyId        String?
+  listingId       String?
+  captureSessionId String?
+  assetType       String
+  provider        String   @default("local")
+  sourceUrl       String?
+  storageKey      String?
+  viewerUrl       String?
+  status          String   @default("uploaded")
+  format          String?
+  fileSizeBytes   Int?
+  metadataJson    Json?
+  disclosureText  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([agencyId, listingId, assetType, status])
+  @@index([captureSessionId])
+}
+
+model SpatialProcessingJob {
+  id              String   @id @default(cuid())
+  agencyId        String?
+  listingId       String?
+  captureSessionId String?
+  providerKey     String
+  jobType         String
+  status          String   @default("queued")
+  priority        Int      @default(50)
+  inputJson       Json
+  outputJson      Json?
+  progress        Int      @default(0)
+  errorMessage    String?
+  costEstimateHuf Int?
+  startedAt       DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([agencyId, listingId, status, priority])
+  @@index([providerKey, jobType, status])
+}
+
+model GaussianSplatScene {
+  id              String   @id @default(cuid())
+  agencyId        String?
+  listingId       String?
+  processingJobId String?
+  sceneName       String
+  status          String   @default("draft")
+  sourceType      String   @default("video_or_photos")
+  splatUrl        String?
+  plyUrl          String?
+  ksplatUrl       String?
+  viewerUrl       String?
+  previewImageUrl String?
+  qualityJson     Json?
+  cameraPathJson  Json?
+  disclosureText  String   @default("3D AI reconstruction preview. Verify geometry before publication.")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([agencyId, listingId, status])
+}
+
+model RoomGraphEdgeV16 {
+  id              String   @id @default(cuid())
+  agencyId        String?
+  listingId       String?
+  fromRoom        String
+  toRoom          String
+  confidence      Int      @default(50)
+  source          String   @default("ai_or_manual")
+  metadataJson    Json?
+  createdAt       DateTime @default(now())
+
+  @@index([agencyId, listingId, fromRoom, toRoom])
+}
+
+model MobileCaptureChecklistItem {
+  id              String   @id @default(cuid())
+  agencyId        String?
+  listingId       String?
+  captureSessionId String?
+  key             String
+  title           String
+  status          String   @default("todo")
+  severity        String   @default("normal")
+  instruction     String
+  evidenceJson    Json?
+  sortOrder       Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([agencyId, listingId, status, severity])
+}
+
+model DigitalTwinReadinessRun {
+  id              String   @id @default(cuid())
+  agencyId        String?
+  listingId       String?
+  status          String   @default("warning")
+  score           Int      @default(0)
+  inputCoverage   Int      @default(0)
+  geometryCoverage Int     @default(0)
+  viewerCoverage  Int      @default(0)
+  complianceCoverage Int   @default(0)
+  checksJson      Json
+  blockersJson    Json?
+  recommendationsJson Json?
+  createdAt       DateTime @default(now())
+
+  @@index([agencyId, listingId, status, createdAt])
+}
+
+// V17: executable spatial worker layer, scene manifests, quality gates and viewer adapters.
+model SpatialWorkerEndpoint {
+  id              String   @id @default(cuid())
+  agencyId        String?
+  workerKey       String
+  displayName     String
+  mode            String   @default("mock")
+  status          String   @default("mock")
+  baseUrl         String?
+  requiredEnvJson Json?
+  missingEnvJson  Json?
+  capabilitiesJson Json
+  healthJson      Json?
+  lastHeartbeatAt DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([agencyId, workerKey])
+  @@index([agencyId, status, mode])
+}
+
+model SpatialProcessingEvent {
+  id              String   @id @default(cuid())
+  agencyId        String?
+  listingId       String?
+  processingJobId String?
+  eventType       String
+  status          String   @default("info")
+  message         String
+  payloadJson     Json?
+  createdAt       DateTime @default(now())
+
+  @@index([agencyId, listingId, eventType, createdAt])
+  @@index([processingJobId, createdAt])
+}
+
+model SpatialSceneManifest {
+  id              String   @id @default(cuid())
+  agencyId        String?
+  listingId       String?
+  sceneId         String?
+  manifestVersion String   @default("v17")
+  status          String   @default("draft")
+  viewerAdapterKey String  @default("estatepilot_splat_viewer")
+  manifestJson    Json
+  checksum        String?
+  publishedUrl    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([agencyId, listingId, status])
+  @@index([sceneId])
+}
+
+model SpatialQualityMetric {
+  id              String   @id @default(cuid())
+  agencyId        String?
+  listingId       String?
+  processingJobId String?
+  sceneId         String?
+  metricKey       String
+  value           Float
+  threshold       Float?
+  status          String   @default("warning")
+  evidenceJson    Json?
+  createdAt       DateTime @default(now())
+
+  @@index([agencyId, listingId, status])
+  @@index([processingJobId, metricKey])
+  @@index([sceneId, metricKey])
+}
+
+model SpatialViewerAdapter {
+  id              String   @id @default(cuid())
+  agencyId        String?
+  adapterKey      String
+  displayName     String
+  status          String   @default("mock")
+  supportedFormatsJson Json
+  embedMode       String   @default("iframe_or_component")
+  requiredEnvJson Json?
+  missingEnvJson  Json?
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([agencyId, adapterKey])
+  @@index([agencyId, status])
+}
+
+model MobileScanUploadIntent {
+  id              String   @id @default(cuid())
+  agencyId        String?
+  listingId       String?
+  captureSessionId String?
+  intentKey       String   @unique
+  status          String   @default("created")
+  expectedAssetType String @default("walkthrough_video")
+  maxFiles        Int      @default(80)
+  maxBytes        Int      @default(2147483647)
+  uploadTargetJson Json
+  expiresAt       DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([agencyId, listingId, status])
+}
+
+
+
+// V18: highest-level 3D reconstruction execution, GPU worker deployment and acceptance pack.
+model SpatialReconstructionRun {
+  id               String   @id @default(cuid())
+  agencyId         String?
+  listingId        String?
+  runKey           String   @unique
+  status           String   @default("dry_run_ready")
+  providerKey      String?
+  requestJson      Json
+  stagePlanJson    Json
+  artifactPlanJson Json?
+  acceptanceJson   Json?
+  estimatedCostHuf Int?
+  dispatchedAt     DateTime?
+  completedAt      DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([agencyId, listingId, status])
+  @@index([providerKey, createdAt])
+}
+
+model SpatialRoomGraphNode {
+  id            String   @id @default(cuid())
+  agencyId      String?
+  listingId     String?
+  nodeKey       String
+  roomName      String
+  confidence    Int      @default(50)
+  source        String   @default("v18_generated")
+  mediaCount    Int      @default(0)
+  metadataJson  Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([agencyId, listingId, nodeKey])
+}
+
+model SpatialRoomGraphEdge {
+  id            String   @id @default(cuid())
+  agencyId      String?
+  listingId     String?
+  fromRoom      String
+  toRoom        String
+  confidence    Int      @default(50)
+  source        String   @default("v18_generated")
+  metadataJson  Json?
+  createdAt     DateTime @default(now())
+
+  @@index([agencyId, listingId, fromRoom, toRoom])
+}
+
+model SpatialManifestValidationRun {
+  id            String   @id @default(cuid())
+  agencyId      String?
+  listingId     String?
+  sceneId       String?
+  status        String   @default("review_required")
+  score         Int      @default(0)
+  checksJson    Json
+  manifestJson  Json
+  checksum      String?
+  blockerJson   Json?
+  createdAt     DateTime @default(now())
+
+  @@index([agencyId, listingId, status, createdAt])
+  @@index([sceneId])
+}
+
+model SpatialGpuWorkerBuild {
+  id              String   @id @default(cuid())
+  agencyId        String?
+  buildKey        String
+  imageRef        String?
+  status          String   @default("planned")
+  requiredEnvJson Json?
+  missingEnvJson  Json?
+  deploymentJson  Json?
+  healthJson      Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([agencyId, buildKey])
+  @@index([agencyId, status])
+}
+
+model SpatialAcceptanceRun {
+  id            String   @id @default(cuid())
+  agencyId      String?
+  listingId     String?
+  status        String   @default("3d_pilot_review")
+  score         Int      @default(0)
+  gatesJson     Json
+  evidenceJson  Json?
+  blockerJson   Json?
+  createdAt     DateTime @default(now())
+
+  @@index([agencyId, listingId, status, createdAt])
+}
+
+model SpatialProductionOrchestrationRun {
+  id               String   @id @default(cuid())
+  agencyId         String?
+  listingId        String?
+  orchestrationKey String
+  status           String   @default("planned")
+  mode             String   @default("dry_run")
+  score            Int      @default(0)
+  stageJson        Json
+  providerJson     Json?
+  riskJson         Json?
+  costEstimateHuf  Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([agencyId, orchestrationKey])
+  @@index([agencyId, listingId, status, createdAt])
+}
+
+model SpatialAssetLineage {
+  id              String   @id @default(cuid())
+  agencyId        String?
+  listingId       String?
+  sceneId         String?
+  assetKey        String
+  sourceType      String
+  sourceRef       String?
+  derivedType     String
+  derivedRef      String?
+  checksum        String?
+  lineageJson     Json
+  createdAt       DateTime @default(now())
+
+  @@index([agencyId, listingId, sceneId])
+  @@unique([agencyId, assetKey])
+}
+
+model SpatialSceneReviewItem {
+  id              String   @id @default(cuid())
+  agencyId        String?
+  listingId       String?
+  sceneId         String?
+  reviewKey       String
+  severity        String   @default("normal")
+  status          String   @default("open")
+  title           String
+  description     String
+  evidenceJson    Json?
+  assignedTo      String?
+  createdAt       DateTime @default(now())
+  resolvedAt      DateTime?
+
+  @@unique([agencyId, reviewKey])
+  @@index([agencyId, listingId, sceneId, status])
+}
+
+model SpatialViewerDeployment {
+  id              String   @id @default(cuid())
+  agencyId        String?
+  listingId       String?
+  sceneId         String?
+  deploymentKey   String
+  status          String   @default("planned")
+  adapterKey      String   @default("webgl_splat_viewer")
+  url             String?
+  embedSnippet    String?
+  configJson      Json
+  securityJson    Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([agencyId, deploymentKey])
+  @@index([agencyId, listingId, sceneId, status])
+}
+
+model SpatialSlaProbe {
+  id              String   @id @default(cuid())
+  agencyId        String?
+  probeKey        String
+  target          String
+  status          String   @default("unknown")
+  latencyMs       Int      @default(0)
+  errorRatePct    Int      @default(0)
+  metadataJson    Json?
+  createdAt       DateTime @default(now())
+
+  @@index([agencyId, probeKey, createdAt])
+}
+
+model SpatialSharePackage {
+  id              String   @id @default(cuid())
+  agencyId        String?
+  listingId       String?
+  sceneId         String?
+  shareKey        String
+  status          String   @default("draft")
+  audience        String   @default("seller")
+  expiresAt       DateTime?
+  permissionsJson Json
+  watermarkJson   Json?
+  disclosureText  String?
+  url             String?
+  createdAt       DateTime @default(now())
+
+  @@unique([agencyId, shareKey])
+  @@index([agencyId, listingId, sceneId, status])
+}
+
+model SpatialDatasetVersion {
+  id              String   @id @default(cuid())
+  agencyId        String?
+  listingId       String?
+  datasetKey      String
+  version         String
+  status          String   @default("captured")
+  mediaCount      Int      @default(0)
+  checksum        String?
+  manifestJson    Json
+  createdAt       DateTime @default(now())
+
+  @@unique([agencyId, datasetKey, version])
+  @@index([agencyId, listingId, status, createdAt])
+}
+
+model SpatialChangeRequest {
+  id              String   @id @default(cuid())
+  agencyId        String?
+  listingId       String?
+  sceneId         String?
+  requestKey      String
+  status          String   @default("open")
+  requestType     String
+  priority        String   @default("normal")
+  description     String
+  evidenceJson    Json?
+  createdAt       DateTime @default(now())
+  resolvedAt      DateTime?
+
+  @@unique([agencyId, requestKey])
+  @@index([agencyId, listingId, sceneId, status])
+}
+
+model AmericanGradeGateRun {
+  id              String   @id @default(cuid())
+  runKey          String   @unique
+  version         String
+  score           Int      @default(0)
+  status          String   @default("partial")
+  blockerCount    Int      @default(0)
+  reportJson      Json
+  createdAt       DateTime @default(now())
+
+  @@index([version, status, createdAt])
+}
+
+model ProviderCertificationRun {
+  id              String   @id @default(cuid())
+  providerKey     String
+  mode            String   @default("dry_run")
+  status          String   @default("partial")
+  missingEnvJson  Json?
+  smokeTest       String?
+  rollbackPlan    String?
+  createdAt       DateTime @default(now())
+
+  @@index([providerKey, status, createdAt])
+}
+
+model AiSlaEvalRun {
+  id              String   @id @default(cuid())
+  evalKey         String
+  status          String   @default("pending")
+  modelUsed       String?
+  latencyMs       Int      @default(0)
+  hallucinationRisk Int    @default(0)
+  resultJson      Json?
+  createdAt       DateTime @default(now())
+
+  @@index([evalKey, status, createdAt])
+}
+
+model SpatialAcceptanceGateRun {
+  id              String   @id @default(cuid())
+  sceneId         String?
+  listingId       String?
+  status          String   @default("pending")
+  coverageScore   Int      @default(0)
+  geometryScore   Int      @default(0)
+  textureScore    Int      @default(0)
+  viewerScore     Int      @default(0)
+  manifestChecksum String?
+  qaJson          Json?
+  createdAt       DateTime @default(now())
+
+  @@index([listingId, sceneId, status, createdAt])
+}
+
+model PremiumUxAuditRun {
+  id              String   @id @default(cuid())
+  listingId       String?
+  score           Int      @default(0)
+  mobileScore     Int      @default(0)
+  demoMinutes     Int      @default(2)
+  findingsJson    Json
+  createdAt       DateTime @default(now())
+
+  @@index([listingId, score, createdAt])
+}
+
+model CrmAutomationQaRun {
+  id              String   @id @default(cuid())
+  leadId          String?
+  listingId       String?
+  status          String   @default("pending")
+  scoreBefore     Int      @default(0)
+  scoreAfter      Int      @default(0)
+  taskCreated     Boolean  @default(false)
+  dealUpdated     Boolean  @default(false)
+  sellerActivityCreated Boolean @default(false)
+  resultJson      Json?
+  createdAt       DateTime @default(now())
+
+  @@index([leadId, listingId, status, createdAt])
+}
+

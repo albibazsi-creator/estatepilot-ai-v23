@@ -1,0 +1,22 @@
+{
+  "version": "0.22.0",
+  "check": "v22-american-grade",
+  "status": "PASS",
+  "checksum": "ea6cfcd12d44b6900dd567d6",
+  "requiredFiles": 29,
+  "missing": [],
+  "missingScripts": [],
+  "badRoutes": [],
+  "badPages": [],
+  "missingGateText": [],
+  "missingConcepts": [],
+  "gates": [
+    "Production build proof gate",
+    "Live AI SLA",
+    "3D / digital twin provider acceptance",
+    "Premium UX benchmark",
+    "CRM revenue automation QA",
+    "Provider certification matrix"
+  ],
+  "note": "No-dependency artifact check. Full Next.js build still requires npm install on the target machine."
+}
