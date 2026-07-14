@@ -4,6 +4,6 @@
   "installCommand": "npm install",
   "regions": ["fra1"],
   "env": {
-    "APP_ENV": "staging"
+    "APP_ENV": "preview"
   }
 }
