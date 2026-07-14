@@ -1,35 +1,38 @@
+﻿export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { BarChart3, Bot, Building2, CalendarDays, CheckSquare, FileText, Home, Inbox, KeyRound, Megaphone, Plug, Scale, Settings, Shield, UploadCloud, Workflow, Activity, CreditCard, Database, FileCheck2, Flag, ListChecks, TrendingUp, Users, BriefcaseBusiness, FileSignature, Calculator, Presentation, MessageSquareWarning, Palette, Languages, BrainCircuit, LifeBuoy, Network, Globe2 } from "lucide-react";
 
 const nav = [
-  { href: "/dashboard", label: "Áttekintés", icon: Home },
+  { href: "/dashboard", label: "ĂttekintĂ©s", icon: Home },
   { href: "/dashboard/daily", label: "Napi AI manager", icon: CheckSquare },
   { href: "/dashboard/listings", label: "Ingatlanok", icon: Building2 },
   { href: "/dashboard/leads", label: "Leadek", icon: Inbox },
   { href: "/dashboard/follow-ups", label: "Follow-up", icon: Workflow },
-  { href: "/dashboard/campaigns", label: "Kampányok", icon: Megaphone },
+  { href: "/dashboard/campaigns", label: "KampĂˇnyok", icon: Megaphone },
   { href: "/dashboard/deals", label: "Deal pipeline", icon: BriefcaseBusiness },
   { href: "/dashboard/proposals", label: "Proposal draft", icon: FileSignature },
   { href: "/dashboard/sales", label: "Sales cockpit", icon: TrendingUp },
-  { href: "/dashboard/appointments", label: "Időpontok", icon: CalendarDays },
+  { href: "/dashboard/appointments", label: "IdĹ‘pontok", icon: CalendarDays },
   { href: "/dashboard/calendar", label: "Slotok", icon: CalendarDays },
   { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/dashboard/reports", label: "Riportok", icon: FileText },
   { href: "/dashboard/seller-activities", label: "Seller feed", icon: FileText },
-  { href: "/dashboard/automation", label: "AI automatizáció", icon: Bot },
-  { href: "/dashboard/ai-decisions", label: "AI döntésnapló", icon: Bot },
+  { href: "/dashboard/automation", label: "AI automatizĂˇciĂł", icon: Bot },
+  { href: "/dashboard/ai-decisions", label: "AI dĂ¶ntĂ©snaplĂł", icon: Bot },
   { href: "/dashboard/ai-evals", label: "AI evals", icon: BrainCircuit },
-  { href: "/dashboard/listing-improvements", label: "Javítási motor", icon: ListChecks },
+  { href: "/dashboard/listing-improvements", label: "JavĂ­tĂˇsi motor", icon: ListChecks },
   { href: "/dashboard/data-privacy", label: "Privacy / DSR", icon: Shield },
   { href: "/dashboard/customer-success", label: "Customer success", icon: TrendingUp },
   { href: "/dashboard/product-feedback", label: "Feedback / NPS", icon: MessageSquareWarning },
   { href: "/dashboard/backups", label: "Backupok", icon: Database },
   { href: "/dashboard/releases", label: "Release notes", icon: Flag },
-  { href: "/dashboard/integrations", label: "Integrációk", icon: Plug },
+  { href: "/dashboard/integrations", label: "IntegrĂˇciĂłk", icon: Plug },
   { href: "/dashboard/import-export", label: "Import / Export", icon: UploadCloud },
-  { href: "/dashboard/portal-exports", label: "Portál export", icon: FileCheck2 },
-  { href: "/dashboard/valuation", label: "Árpozíció", icon: Calculator },
+  { href: "/dashboard/portal-exports", label: "PortĂˇl export", icon: FileCheck2 },
+  { href: "/dashboard/valuation", label: "ĂrpozĂ­ciĂł", icon: Calculator },
   { href: "/dashboard/quality", label: "Data quality", icon: ListChecks },
   { href: "/dashboard/compliance", label: "Compliance", icon: Scale },
   { href: "/dashboard/api-keys", label: "API kulcsok", icon: KeyRound },
@@ -106,17 +109,17 @@ const nav = [
   { href: "/dashboard/chat-gaps", label: "Chat gaps", icon: MessageSquareWarning },
   { href: "/dashboard/team", label: "Team", icon: Users },
   { href: "/dashboard/branding", label: "White-label", icon: Palette },
-  { href: "/dashboard/translations", label: "Fordítások", icon: Languages },
+  { href: "/dashboard/translations", label: "FordĂ­tĂˇsok", icon: Languages },
   { href: "/dashboard/buyer-intel", label: "Buyer intel", icon: BrainCircuit },
   { href: "/dashboard/guardrails", label: "Chat guardrails", icon: Shield },
   { href: "/dashboard/partner-api", label: "Partner API", icon: Network },
   { href: "/dashboard/support", label: "Support", icon: LifeBuoy },
-  { href: "/dashboard/sla", label: "SLA / státusz", icon: Globe2 },
+  { href: "/dashboard/sla", label: "SLA / stĂˇtusz", icon: Globe2 },
   { href: "/dashboard/demo-center", label: "Demo center", icon: Presentation },
   { href: "/dashboard/handoff", label: "Handoff", icon: FileCheck2 },
   { href: "/dashboard/onboarding", label: "Onboarding", icon: CheckSquare },
   { href: "/admin", label: "Admin", icon: Shield },
-  { href: "/dashboard/settings", label: "Beállítások", icon: Settings }
+  { href: "/dashboard/settings", label: "BeĂˇllĂ­tĂˇsok", icon: Settings }
 ];
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
@@ -141,3 +144,4 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     </div>
   );
 }
+
